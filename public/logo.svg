@@ -1,0 +1,85 @@
+<svg viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg">
+  <!-- Orange Heart -->
+  <g transform="translate(420, 45)">
+    <path d="M25 18 A10 10 0 0 0 5 18 A20 20 0 0 0 25 38 A20 20 0 0 0 45 18 A10 10 0 0 0 25 18 Z" fill="#FF8533" stroke="#000" stroke-width="0"/>
+  </g>
+  
+  <!-- Base Platform -->
+  <rect x="40" y="440" width="440" height="25" fill="#3D2E1F" rx="5"/>
+  
+  <!-- House Back Wall -->
+  <path d="M 70 440 L 70 200 L 260 80 L 450 200 L 450 440 Z" fill="#4FB5D9" stroke="#3D2E1F" stroke-width="14" stroke-linejoin="miter"/>
+  
+  <!-- Roof -->
+  <path d="M 40 200 L 260 60 L 480 200" fill="none" stroke="#3D2E1F" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Right Window -->
+  <g transform="translate(380, 150)">
+    <rect width="50" height="70" rx="5" fill="#3A92B5" stroke="#3D2E1F" stroke-width="8"/>
+    <line x1="25" y1="0" x2="25" y2="70" stroke="#3D2E1F" stroke-width="6"/>
+    <line x1="0" y1="35" x2="50" y2="35" stroke="#3D2E1F" stroke-width="6"/>
+  </g>
+  
+  <!-- Dog Body -->
+  <ellipse cx="260" cy="340" rx="105" ry="85" fill="#D97836"/>
+  
+  <!-- Dog Head -->
+  <circle cx="260" cy="260" r="75" fill="#D97836"/>
+  
+  <!-- Left Ear (Floppy) -->
+  <ellipse cx="200" cy="220" rx="35" ry="60" fill="#D97836" transform="rotate(-30 200 220)"/>
+  <ellipse cx="200" cy="220" rx="20" ry="40" fill="#C66A2E" transform="rotate(-30 200 220)"/>
+  
+  <!-- Right Ear (Floppy) -->
+  <ellipse cx="320" cy="220" rx="35" ry="60" fill="#D97836" transform="rotate(30 320 220)"/>
+  <ellipse cx="320" cy="220" rx="20" ry="40" fill="#C66A2E" transform="rotate(30 320 220)"/>
+  
+  <!-- White Chest Patch -->
+  <ellipse cx="260" cy="345" rx="55" ry="60" fill="#FFFFFF"/>
+  
+  <!-- White Forehead Stripe -->
+  <ellipse cx="260" cy="235" rx="15" ry="50" fill="#FFFFFF"/>
+  
+  <!-- White Muzzle Area -->
+  <ellipse cx="260" cy="280" rx="42" ry="45" fill="#FFFFFF"/>
+  
+  <!-- Left Eye (Open) -->
+  <circle cx="235" cy="250" r="10" fill="#3D2E1F"/>
+  <circle cx="237" cy="247" r="4" fill="#FFFFFF"/>
+  
+  <!-- Right Eye (Winking) -->
+  <path d="M 275 250 Q 285 248 295 250" fill="none" stroke="#3D2E1F" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Nose -->
+  <ellipse cx="260" cy="290" rx="14" ry="12" fill="#3D2E1F"/>
+  <ellipse cx="257" cy="287" rx="4" ry="3" fill="#FFFFFF" opacity="0.6"/>
+  
+  <!-- Smile/Mouth -->
+  <path d="M 245 305 Q 260 320 275 305" fill="none" stroke="#3D2E1F" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 260 305 L 260 290" stroke="#3D2E1F" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Left Paw (Visible at bottom) -->
+  <g transform="translate(190, 415)">
+    <ellipse cx="0" cy="0" rx="38" ry="23" fill="#D97836"/>
+    <ellipse cx="0" cy="5" rx="32" ry="18" fill="#FFFFFF"/>
+    <circle cx="-12" cy="10" r="4" fill="#3D2E1F"/>
+    <circle cx="0" cy="13" r="4" fill="#3D2E1F"/>
+    <circle cx="12" cy="10" r="4" fill="#3D2E1F"/>
+  </g>
+  
+  <!-- Right Paw (Visible at bottom) -->
+  <g transform="translate(330, 415)">
+    <ellipse cx="0" cy="0" rx="38" ry="23" fill="#D97836"/>
+    <ellipse cx="0" cy="5" rx="32" ry="18" fill="#FFFFFF"/>
+    <circle cx="-12" cy="10" r="4" fill="#3D2E1F"/>
+    <circle cx="0" cy="13" r="4" fill="#3D2E1F"/>
+    <circle cx="12" cy="10" r="4" fill="#3D2E1F"/>
+  </g>
+  
+  <!-- Tail (Slightly visible behind) -->
+  <path d="M 350 320 Q 380 310 390 330" fill="none" stroke="#D97836" stroke-width="20" stroke-linecap="round"/>
+  
+  <!-- Add strokes for definition -->
+  <circle cx="260" cy="260" r="75" fill="none" stroke="#3D2E1F" stroke-width="4"/>
+  <ellipse cx="260" cy="340" rx="105" ry="85" fill="none" stroke="#3D2E1F" stroke-width="4"/>
+</svg>

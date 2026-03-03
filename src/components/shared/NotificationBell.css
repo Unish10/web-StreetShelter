@@ -1,0 +1,267 @@
+.notification-bell {
+    position: relative;
+}
+
+.notification-bell-btn {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: #6b7280;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-bell-btn:hover {
+    color: #6366f1;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ef4444;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 90vw;
+    max-width: 380px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 640px) {
+    .notification-dropdown {
+        width: 380px;
+        max-height: 600px;
+    }
+}
+
+.notification-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (min-width: 640px) {
+    .notification-header {
+        padding: 1rem 1.25rem;
+    }
+}
+
+.notification-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+@media (min-width: 640px) {
+    .notification-header h3 {
+        font-size: 1.125rem;
+    }
+}
+
+.mark-all-read-btn {
+    background: none;
+    border: none;
+    color: #6366f1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .mark-all-read-btn {
+        font-size: 0.8125rem;
+    }
+}
+
+.mark-all-read-btn:hover {
+    text-decoration: underline;
+}
+
+.notification-list {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+    .notification-list {
+        max-height: 480px;
+    }
+}
+
+.notification-loading,
+.notification-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+@media (min-width: 640px) {
+    .notification-loading,
+    .notification-empty {
+        padding: 2.5rem 1.25rem;
+    }
+}
+
+.notification-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-empty p {
+    margin: 0;
+    color: #9ca3af;
+}
+
+.notification-item {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-item:hover {
+    background: #f9fafb;
+}
+
+.notification-item.unread {
+    background: #eef2ff;
+}
+
+.notification-item.unread:hover {
+    background: #e0e7ff;
+}
+
+.notification-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: #f3f4f6;
+    border-radius: 50%;
+}
+
+.notification-item.unread .notification-icon {
+    background: #dbeafe;
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px 0;
+}
+
+.notification-content p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.notification-delete-btn {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.notification-delete-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.notification-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.view-all-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #6366f1;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.view-all-btn:hover {
+    background: #eef2ff;
+}
+
+
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
