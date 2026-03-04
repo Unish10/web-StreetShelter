@@ -179,9 +179,6 @@ const ReporterDashboard = () => {
                     >
                         <span className="admin-menu-icon"></span>
                         <span className="admin-menu-text">My Reports</span>
-                        {stats.myReports > 0 && (
-                            <span className="admin-menu-badge">{stats.myReports}</span>
-                        )}
                     </button>
                     
                     <button 
