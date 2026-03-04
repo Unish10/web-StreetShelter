@@ -18,7 +18,7 @@ export default function Landing() {
         <div className="header-content">
           <div className="header-inner">
             <Link to="/" className="logo-link">
-              <img src="/logo.svg" alt="StreetShelter" className="logo-image" style={{width: '90px', height: 'auto'}} />
+              <img src="/logo.svg" alt="StreetShelter" className="logo-image" style={{width: '50px', height: 'auto'}} />
             </Link>
 
             <nav className="nav-desktop">

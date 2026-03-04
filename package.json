@@ -16,12 +16,7 @@
     "test:coverage": "vitest --coverage",
     "test:run": "vitest run",
     "test:backend": "cd server && npm test",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug",
-    "test:all": "npm run test:backend && npm run test:run && npm run test:e2e",
-    "playwright:install": "playwright install"
+    "test:all": "npm run test:backend && npm run test:run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -35,7 +30,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -51,7 +45,6 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "jsdom": "^28.1.0",
-    "playwright": "^1.58.2",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "vite": "^7.2.4",
