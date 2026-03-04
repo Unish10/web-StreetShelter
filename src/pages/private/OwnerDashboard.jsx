@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ownerAPI, dogReportsAPI } from '../../utils/api';
 import NotificationBell from '../../components/shared/NotificationBell';
+import CommentSection from '../../components/shared/CommentSection';
 import './AdminDashboard.css';
 
 const OwnerDashboard = () => {
@@ -20,6 +21,11 @@ const OwnerDashboard = () => {
         activeRescues: 0,
         successStories: 0
     });
+    
+    // Search and filter states
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [dateFilter, setDateFilter] = useState('all');
 
     useEffect(() => {
         const loadUserAndProfile = async () => {
@@ -121,6 +127,41 @@ const OwnerDashboard = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('isAuthenticated');
         navigate('/');
+    };
+
+    // Filter reports based on search and filters
+    const filterReports = (reports) => {
+        let filtered = [...reports];
+
+        // Search filter
+        if (searchQuery.trim()) {
+            filtered = filtered.filter(report =>
+                report.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                report.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                report.additionalNotes?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        // Status filter
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(report => report.status === statusFilter);
+        }
+
+        // Date filter
+        if (dateFilter !== 'all') {
+            const now = new Date();
+            filtered = filtered.filter(report => {
+                const reportDate = new Date(report.createdAt);
+                const daysDiff = Math.floor((now - reportDate) / (1000 * 60 * 60 * 24));
+                
+                if (dateFilter === 'today') return daysDiff === 0;
+                if (dateFilter === 'week') return daysDiff <= 7;
+                if (dateFilter === 'month') return daysDiff <= 30;
+                return true;
+            });
+        }
+
+        return filtered;
     };
 
     const handleViewReport = (report) => {
@@ -533,12 +574,12 @@ const OwnerDashboard = () => {
 
                         <div className="admin-profile-section">
                             <div className="admin-profile-info">
-                                <div className="admin-profile-name">{user.name}</div>
+                                <div className="admin-profile-name">{user.name || user.username}</div>
                                 <div className="admin-profile-role">Rescue Owner</div>
                             </div>
                             <img 
-                                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=10b981&color=fff`}
-                                alt={user.name} 
+                                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=10b981&color=fff`}
+                                alt={user.name || user.username} 
                                 className="admin-profile-avatar" 
                             />
                         </div>
@@ -713,14 +754,103 @@ const OwnerDashboard = () => {
                                 <p className="admin-welcome-subtitle">View and manage all dog reports in your area.</p>
                             </div>
 
+                            {/* Search and Filter Bar */}
+                            <div style={{ 
+                                background: 'white', 
+                                borderRadius: '12px', 
+                                padding: '20px', 
+                                marginBottom: '20px',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '16px'
+                            }}>
+                                <input
+                                    type="text"
+                                    placeholder="Search by location, description..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    style={{
+                                        padding: '12px 16px',
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        width: '100%'
+                                    }}
+                                />
+                                
+                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                    <select
+                                        value={statusFilter}
+                                        onChange={(e) => setStatusFilter(e.target.value)}
+                                        style={{
+                                            padding: '10px 14px',
+                                            border: '1px solid #e5e7eb',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            background: 'white',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <option value="all">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="closed">Closed</option>
+                                    </select>
+
+                                    <select
+                                        value={dateFilter}
+                                        onChange={(e) => setDateFilter(e.target.value)}
+                                        style={{
+                                            padding: '10px 14px',
+                                            border: '1px solid #e5e7eb',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            background: 'white',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <option value="all">All Time</option>
+                                        <option value="today">Today</option>
+                                        <option value="week">This Week</option>
+                                        <option value="month">This Month</option>
+                                    </select>
+
+                                    {(searchQuery || statusFilter !== 'all' || dateFilter !== 'all') && (
+                                        <button
+                                            onClick={() => {
+                                                setSearchQuery('');
+                                                setStatusFilter('all');
+                                                setDateFilter('all');
+                                            }}
+                                            style={{
+                                                padding: '10px 16px',
+                                                background: '#f3f4f6',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                cursor: 'pointer',
+                                                color: '#6b7280',
+                                                fontWeight: '500'
+                                            }}
+                                        >
+                                            Clear Filters
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
                             <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                                {[...pendingReports, ...inProgressReports, ...rescuedReports].length === 0 ? (
+                                {filterReports([...pendingReports, ...inProgressReports, ...rescuedReports]).length === 0 ? (
                                     <p style={{ textAlign: 'center', color: '#6b7280', padding: '40px' }}>
-                                        No reports available.
+                                        {searchQuery || statusFilter !== 'all' || dateFilter !== 'all' 
+                                            ? 'No reports match your filters.' 
+                                            : 'No reports available.'}
                                     </p>
                                 ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        {[...pendingReports, ...inProgressReports, ...rescuedReports].map(report => (
+                                        {filterReports([...pendingReports, ...inProgressReports, ...rescuedReports]).map(report => (
                                             <div key={report.id} style={{
                                                 padding: '16px',
                                                 border: '1px solid #e5e7eb',
@@ -1039,6 +1169,9 @@ const OwnerDashboard = () => {
                                 );
                             }
                         })()}
+
+                        {/* Comments Section */}
+                        <CommentSection reportId={selectedReport.id} />
 
                         <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
                             {selectedReport.status === 'pending' && (

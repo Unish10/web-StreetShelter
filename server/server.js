@@ -17,6 +17,7 @@ const ownerRoutes = require('./routes/owner.routes');
 const passwordResetRoutes = require('./routes/passwordReset.routes');
 const adminRoutes = require('./routes/admin.routes');
 const notificationRoutes = require('./routes/notification.routes');
+const commentRoutes = require('./routes/comment.routes');
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use('/api/owners', ownerRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/comments', commentRoutes);
 
 
 app.get('/api/health', (req, res) => {

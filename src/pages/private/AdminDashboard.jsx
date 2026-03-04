@@ -210,12 +210,12 @@ const AdminDashboard = () => {
 
                         <div className="admin-profile-section">
                             <div className="admin-profile-info">
-                                <div className="admin-profile-name">Admin Panel</div>
+                                <div className="admin-profile-name">{user.name || user.username}</div>
                                 <div className="admin-profile-role">Administrator</div>
                             </div>
                             <img 
-                                src="https://ui-avatars.com/api/?name=Admin&background=5b5bd6&color=fff" 
-                                alt="Admin" 
+                                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=5b5bd6&color=fff`}
+                                alt={user.name || user.username} 
                                 className="admin-profile-avatar" 
                             />
                         </div>

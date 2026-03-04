@@ -33,6 +33,7 @@ const Login = () => {
             const userData = {
                 id: response._id,
                 username: response.username,
+                name: response.name || response.username,
                 email: response.email,
                 role: response.role,
                 token: response.token

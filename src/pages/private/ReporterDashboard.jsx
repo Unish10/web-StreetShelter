@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { dogReportsAPI } from '../../utils/api';
 import NotificationBell from '../../components/shared/NotificationBell';
 import ReportDog from './ReportDog';
+import CommentSection from '../../components/shared/CommentSection';
 import './AdminDashboard.css';
 
 const ReporterDashboard = () => {
@@ -20,6 +21,15 @@ const ReporterDashboard = () => {
     const [liveReports, setLiveReports] = useState([]);
     const [recentReports, setRecentReports] = useState([]);
     const [myReports, setMyReports] = useState([]);
+    
+    // Search and filter states
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [dateFilter, setDateFilter] = useState('all');
+    
+    // Modal states
+    const [selectedReport, setSelectedReport] = useState(null);
+    const [showReportModal, setShowReportModal] = useState(false);
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -96,6 +106,46 @@ const ReporterDashboard = () => {
         navigate('/');
     };
 
+    // Filter reports based on search and filters
+    const filterReports = (reports) => {
+        let filtered = [...reports];
+
+        // Search filter
+        if (searchQuery.trim()) {
+            filtered = filtered.filter(report =>
+                report.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                report.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                report.additionalNotes?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        // Status filter
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(report => report.status === statusFilter);
+        }
+
+        // Date filter
+        if (dateFilter !== 'all') {
+            const now = new Date();
+            filtered = filtered.filter(report => {
+                const reportDate = new Date(report.createdAt);
+                const daysDiff = Math.floor((now - reportDate) / (1000 * 60 * 60 * 24));
+                
+                if (dateFilter === 'today') return daysDiff === 0;
+                if (dateFilter === 'week') return daysDiff <= 7;
+                if (dateFilter === 'month') return daysDiff <= 30;
+                return true;
+            });
+        }
+
+        return filtered;
+    };
+
+    const handleViewReport = (report) => {
+        setSelectedReport(report);
+        setShowReportModal(true);
+    };
+
     if (!user) return null;
 
     return (
@@ -169,13 +219,15 @@ const ReporterDashboard = () => {
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                         <NotificationBell />
                         <div className="admin-profile-section">
-                            <div>
-                                <div className="admin-profile-name">{user.name}</div>
+                            <div className="admin-profile-info">
+                                <div className="admin-profile-name">{user.name || user.username}</div>
                                 <div className="admin-profile-role">Reporter</div>
                             </div>
-                            <div className="admin-profile-avatar">
-                                {user.name?.charAt(0).toUpperCase()}
-                            </div>
+                            <img 
+                                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=f59e0b&color=fff`}
+                                alt={user.name || user.username} 
+                                className="admin-profile-avatar" 
+                            />
                         </div>
                     </div>
                 </header>
@@ -282,20 +334,125 @@ const ReporterDashboard = () => {
                                 <p className="admin-welcome-subtitle">Real-time tracking of all active dog reports in your area.</p>
                             </div>
 
+                            {/* Search and Filter Bar */}
+                            <div style={{ 
+                                background: 'white', 
+                                borderRadius: '12px', 
+                                padding: '20px', 
+                                marginBottom: '20px',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '16px'
+                            }}>
+                                <input
+                                    type="text"
+                                    placeholder="Search by location, description..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    style={{
+                                        padding: '12px 16px',
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        width: '100%'
+                                    }}
+                                />
+                                
+                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                    <select
+                                        value={statusFilter}
+                                        onChange={(e) => setStatusFilter(e.target.value)}
+                                        style={{
+                                            padding: '10px 14px',
+                                            border: '1px solid #e5e7eb',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            background: 'white',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <option value="all">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="closed">Closed</option>
+                                    </select>
+
+                                    <select
+                                        value={dateFilter}
+                                        onChange={(e) => setDateFilter(e.target.value)}
+                                        style={{
+                                            padding: '10px 14px',
+                                            border: '1px solid #e5e7eb',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            background: 'white',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <option value="all">All Time</option>
+                                        <option value="today">Today</option>
+                                        <option value="week">This Week</option>
+                                        <option value="month">This Month</option>
+                                    </select>
+
+                                    {(searchQuery || statusFilter !== 'all' || dateFilter !== 'all') && (
+                                        <button
+                                            onClick={() => {
+                                                setSearchQuery('');
+                                                setStatusFilter('all');
+                                                setDateFilter('all');
+                                            }}
+                                            style={{
+                                                padding: '10px 16px',
+                                                background: '#f3f4f6',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                cursor: 'pointer',
+                                                color: '#6b7280',
+                                                fontWeight: '500'
+                                            }}
+                                        >
+                                            Clear Filters
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
                             <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                                {liveReports.length === 0 ? (
+                                {filterReports(liveReports).length === 0 ? (
                                     <p style={{ textAlign: 'center', color: '#6b7280', padding: '40px' }}>
-                                        No active reports at the moment.
+                                        {searchQuery || statusFilter !== 'all' || dateFilter !== 'all' 
+                                            ? 'No reports match your filters.' 
+                                            : 'No active reports at the moment.'}
                                     </p>
                                 ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                        {liveReports.map(report => (
-                                            <div key={report.id} style={{
-                                                padding: '20px',
-                                                border: '2px solid #e5e7eb',
-                                                borderRadius: '12px',
-                                                background: '#fefefe'
-                                            }}>
+                                        {filterReports(liveReports).map(report => (
+                                            <div 
+                                                key={report.id} 
+                                                onClick={() => handleViewReport(report)}
+                                                style={{
+                                                    padding: '20px',
+                                                    border: '2px solid #e5e7eb',
+                                                    borderRadius: '12px',
+                                                    background: '#fefefe',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.borderColor = '#5b5bd6';
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.borderColor = '#e5e7eb';
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                            >
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ fontWeight: '600', color: '#1f2937', fontSize: '18px', marginBottom: '8px' }}>                                                            {report.location}
@@ -360,6 +517,95 @@ const ReporterDashboard = () => {
                                 <p className="admin-welcome-subtitle">Track all your submitted reports and their rescue status.</p>
                             </div>
 
+                            {/* Search and Filter Bar */}
+                            {myReports.length > 0 && (
+                                <div style={{ 
+                                    background: 'white', 
+                                    borderRadius: '12px', 
+                                    padding: '20px', 
+                                    marginBottom: '20px',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '16px'
+                                }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Search your reports..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        style={{
+                                            padding: '12px 16px',
+                                            border: '1px solid #e5e7eb',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            width: '100%'
+                                        }}
+                                    />
+                                    
+                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                        <select
+                                            value={statusFilter}
+                                            onChange={(e) => setStatusFilter(e.target.value)}
+                                            style={{
+                                                padding: '10px 14px',
+                                                border: '1px solid #e5e7eb',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                background: 'white',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <option value="all">All Status</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="in_progress">In Progress</option>
+                                            <option value="resolved">Resolved</option>
+                                            <option value="closed">Closed</option>
+                                        </select>
+
+                                        <select
+                                            value={dateFilter}
+                                            onChange={(e) => setDateFilter(e.target.value)}
+                                            style={{
+                                                padding: '10px 14px',
+                                                border: '1px solid #e5e7eb',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                background: 'white',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <option value="all">All Time</option>
+                                            <option value="today">Today</option>
+                                            <option value="week">This Week</option>
+                                            <option value="month">This Month</option>
+                                        </select>
+
+                                        {(searchQuery || statusFilter !== 'all' || dateFilter !== 'all') && (
+                                            <button
+                                                onClick={() => {
+                                                    setSearchQuery('');
+                                                    setStatusFilter('all');
+                                                    setDateFilter('all');
+                                                }}
+                                                style={{
+                                                    padding: '10px 16px',
+                                                    background: '#f3f4f6',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    fontSize: '14px',
+                                                    cursor: 'pointer',
+                                                    color: '#6b7280',
+                                                    fontWeight: '500'
+                                                }}
+                                            >
+                                                Clear Filters
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
                                 {myReports.length === 0 ? (
                                     <div style={{ textAlign: 'center', padding: '40px' }}>
@@ -398,14 +644,33 @@ const ReporterDashboard = () => {
                                     </div>
                                 ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                        {myReports.map(report => (
-                                            <div key={report.id} style={{
-                                                padding: '20px',
-                                                border: '1px solid #e5e7eb',
-                                                borderRadius: '12px',
-                                                display: 'flex',
-                                                gap: '20px'
-                                            }}>
+                                        {filterReports(myReports).length === 0 ? (
+                                            <p style={{ textAlign: 'center', color: '#6b7280', padding: '40px' }}>
+                                                No reports match your filters.
+                                            </p>
+                                        ) : (
+                                            filterReports(myReports).map(report => (
+                                            <div 
+                                                key={report.id} 
+                                                onClick={() => handleViewReport(report)}
+                                                style={{
+                                                    padding: '20px',
+                                                    border: '1px solid #e5e7eb',
+                                                    borderRadius: '12px',
+                                                    display: 'flex',
+                                                    gap: '20px',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.borderColor = '#5b5bd6';
+                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.borderColor = '#e5e7eb';
+                                                    e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                            >
                                                 {report.imageUrl && (() => {
                                                     try {
                                                         const images = JSON.parse(report.imageUrl);
@@ -482,7 +747,7 @@ const ReporterDashboard = () => {
                                                     </p>
                                                 </div>
                                             </div>
-                                        ))}
+                                        )))}
                                     </div>
                                 )}
                             </div>
@@ -511,6 +776,160 @@ const ReporterDashboard = () => {
                     )}
                 </div>
             </main>
+
+            {/* Report Details Modal */}
+            {showReportModal && selectedReport && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }} onClick={() => setShowReportModal(false)}>
+                    <div style={{
+                        background: 'white',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        maxWidth: '700px',
+                        width: '90%',
+                        maxHeight: '85vh',
+                        overflow: 'auto'
+                    }} onClick={(e) => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '20px' }}>
+                            <h2 style={{ margin: 0, color: '#1f2937', fontSize: '24px' }}>Report Details</h2>
+                            <button
+                                onClick={() => setShowReportModal(false)}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    fontSize: '24px',
+                                    cursor: 'pointer',
+                                    color: '#9ca3af',
+                                    padding: '0',
+                                    width: '32px',
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: '6px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = '#f3f4f6';
+                                    e.currentTarget.style.color = '#1f2937';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = '#9ca3af';
+                                }}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        
+                        <div style={{ marginBottom: '16px' }}>
+                            <strong style={{ color: '#374151' }}>Location:</strong> 
+                            <span style={{ marginLeft: '8px', color: '#1f2937' }}>{selectedReport.location}</span>
+                        </div>
+                        
+                        {selectedReport.latitude && selectedReport.longitude && (
+                            <div style={{ marginBottom: '16px', fontSize: '14px', color: '#6b7280' }}>
+                                <strong>Coordinates:</strong> {parseFloat(selectedReport.latitude).toFixed(6)}, {parseFloat(selectedReport.longitude).toFixed(6)}
+                            </div>
+                        )}
+                        
+                        <div style={{ marginBottom: '16px' }}>
+                            <strong style={{ color: '#374151' }}>Description:</strong>
+                            <p style={{ marginTop: '8px', color: '#1f2937', lineHeight: '1.6' }}>{selectedReport.description}</p>
+                        </div>
+                        
+                        <div style={{ marginBottom: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
+                            <div>
+                                <strong style={{ color: '#374151' }}>Status:</strong>
+                                <span style={{
+                                    marginLeft: '8px',
+                                    padding: '4px 12px',
+                                    background: selectedReport.status === 'resolved' ? '#d1fae5' : 
+                                               selectedReport.status === 'in_progress' ? '#fed7aa' : '#fee2e2',
+                                    color: selectedReport.status === 'resolved' ? '#065f46' : 
+                                           selectedReport.status === 'in_progress' ? '#92400e' : '#991b1b',
+                                    borderRadius: '20px',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    textTransform: 'capitalize'
+                                }}>
+                                    {selectedReport.status.replace('_', ' ')}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div style={{ marginBottom: '16px', fontSize: '14px', color: '#6b7280' }}>
+                            <strong style={{ color: '#374151' }}>Reported:</strong> {new Date(selectedReport.createdAt).toLocaleString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </div>
+
+                        {selectedReport.imageUrl && (() => {
+                            try {
+                                const images = JSON.parse(selectedReport.imageUrl);
+                                return (
+                                    <div style={{ marginBottom: '16px' }}>
+                                        <strong style={{ color: '#374151' }}>Images ({images.length}):</strong>
+                                        <div style={{ 
+                                            display: 'grid', 
+                                            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+                                            gap: '12px', 
+                                            marginTop: '12px' 
+                                        }}>
+                                            {images.map((imgUrl, idx) => (
+                                                <img 
+                                                    key={idx}
+                                                    src={`http://localhost:3000${imgUrl}`}
+                                                    alt={`Report ${idx + 1}`}
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        height: '200px', 
+                                                        objectFit: 'cover', 
+                                                        borderRadius: '8px', 
+                                                        border: '1px solid #e5e7eb'
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            } catch (e) {
+                                return (
+                                    <div style={{ marginBottom: '16px' }}>
+                                        <strong style={{ color: '#374151' }}>Image:</strong>
+                                        <img 
+                                            src={`http://localhost:3000${selectedReport.imageUrl}`}
+                                            alt="Report"
+                                            style={{ 
+                                                maxWidth: '100%', 
+                                                borderRadius: '8px', 
+                                                marginTop: '12px',
+                                                border: '1px solid #e5e7eb'
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            }
+                        })()}
+
+                        {/* Comments Section */}
+                        <CommentSection reportId={selectedReport.id} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
